@@ -1,0 +1,11 @@
+# Virtual environment: huge, and anyone can rebuild it from requirements.txt
+.venv/
+# API keys: NEVER push
+.env
+# Python and Jupyter cache files
+__pycache__/
+.ipynb_checkpoints/
+# Mac system file
+.DS_Store
+# VS Code personal settings
+.vscode/

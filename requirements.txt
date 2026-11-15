@@ -1,0 +1,4 @@
+pandas      # tables of data (DataFrames)
+numpy       # fast math on arrays
+matplotlib  # charts for the analysis
+jupyter     # notebooks
