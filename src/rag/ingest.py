@@ -2,8 +2,9 @@
 
 Each row of the cleaned trips dataset becomes one Document: a natural-language
 description used for retrieval and prompting, plus structured metadata used
-for filtering. Personally identifying columns are excluded, and fields missing
-from the source data are omitted rather than guessed.
+for filtering. Personally identifying columns are excluded, traveler age is
+generalized to an age group, and fields missing from the source data are
+omitted rather than guessed.
 
 Usage:
     python -m src.rag.ingest
@@ -16,8 +17,8 @@ import pandas as pd
 
 TRIPS_CSV_PATH = Path("data/trips_clean.csv")
 
-# Names and gender add no value to travel answers and must never reach an LLM prompt.
-EXCLUDED_COLUMNS = ("Traveler name", "Traveler gender")
+# Identity details add no value to travel answers and must never reach an LLM prompt.
+EXCLUDED_COLUMNS = ("Traveler name", "Traveler gender", "Traveler nationality")
 
 
 @dataclass
@@ -47,9 +48,15 @@ def format_location(trip: pd.Series) -> str:
     return f"{trip['City']}, {trip['Country']}"
 
 
+def format_age_group(age: float) -> str:
+    """Return the decade an age falls in, e.g. 35 -> '30s'."""
+    return f"{int(age) // 10 * 10}s"
+
+
 def trip_to_document(trip: pd.Series) -> Document:
     """Convert one trip row into a Document, describing only recorded fields."""
     month = trip["Start date"].strftime("%B")
+    age_group = format_age_group(trip["Traveler age"]) if pd.notna(trip["Traveler age"]) else None
 
     sentences = [
         f"{trip['Duration (days)']}-day trip to {format_location(trip)} starting in {month}.",
@@ -63,7 +70,8 @@ def trip_to_document(trip: pd.Series) -> Document:
         )
     if pd.notna(trip["Total cost"]):
         sentences.append(f"Total cost: ${trip['Total cost']:,.0f}.")
-    sentences.append(f"Traveler: {trip['Traveler age']}-year-old {trip['Traveler nationality']}.")
+    if age_group:
+        sentences.append(f"Traveler age group: {age_group}.")
 
     metadata = {
         "country": trip["Country"],
@@ -75,6 +83,7 @@ def trip_to_document(trip: pd.Series) -> Document:
         "city": trip["City"],
         "transportation_type": trip["Transportation type"],
         "total_cost_usd": float(trip["Total cost"]),
+        "traveler_age_group": age_group,
     }
     # Vector stores reject null metadata values, so missing fields are omitted.
     metadata.update({key: value for key, value in optional_fields.items() if pd.notna(value)})
