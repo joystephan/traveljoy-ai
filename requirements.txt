@@ -3,5 +3,6 @@ numpy       # fast math on arrays
 matplotlib  # charts for the analysis
 jupyter     # notebooks
 google-genai==3.5.0    # Gemini API (LLM calls)
+httpx2==2.16.2         # HTTP client used by google-genai (request timeouts)
 pydantic==2.14.3       # JSON schemas + validation
 python-dotenv==1.2.4   # loads API keys from .env
