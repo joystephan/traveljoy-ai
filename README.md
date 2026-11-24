@@ -26,6 +26,12 @@ AI-powered travel assistant that answers travel questions from real trip data. B
 - Missing source fields handled explicitly and never guessed
 - Document shape mirrors LangChain and Chroma (`id`, `text`, `metadata`)
 
+### ✅ Command-line interface
+- Interactive question loop (`main.py`): prints each grounded answer followed by the IDs of the trips retrieved for it
+- Exits cleanly on `quit`, `exit`, an empty line, or Ctrl+C
+- Shows a friendly message instead of a traceback when every configured model is unavailable, and keeps the session running
+- Logs model fallback events from the project's Gemini client while keeping third-party libraries at warning level
+
 ## Tech Stack
 - **Language:** Python
 - **Data:** Pandas, NumPy, Jupyter
@@ -47,6 +53,7 @@ TravelJoy AI/
 │       ├── retrieve.py    # keyword retrieval (IDF)
 │       └── answer.py      # retrieved trips + question → grounded answer
 ├── tests/
+├── main.py                # CLI: ask travel questions in a loop
 ├── requirements.txt
 └── README.md
 ```
@@ -69,6 +76,7 @@ Get a free API key at [Google AI Studio](https://aistudio.google.com/).
 
 ## Usage
 ```bash
+python main.py                                                           # interactive Q&A over the trip dataset
 python -m src.structured_demo                                            # structured trip recommendation from Gemini
 python -m src.rag.ingest                                                 # load trips as RAG documents
 python -m src.rag.retrieve "hotel trip to London in May"                 # show the best-matching trips
@@ -80,7 +88,7 @@ python -m src.rag.answer "Which London trip had the lowest total cost?"  # groun
 - [x] Structured outputs with Gemini + Pydantic
 - [x] RAG document ingestion
 - [x] Keyword retrieval + grounded LLM answers
-- [ ] CLI query interface
+- [x] CLI query interface
 - [ ] Embeddings + Chroma vector database
 - [ ] LangGraph agent with tools + MCP
 - [ ] FastAPI + Docker deployment
