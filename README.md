@@ -32,6 +32,14 @@ AI-powered travel assistant that answers travel questions from real trip data. B
 - Shows a friendly message instead of a traceback when every configured model is unavailable, and keeps the session running
 - Logs model fallback events from the project's Gemini client while keeping third-party libraries at warning level
 
+### ✅ Automated tests
+- 28 pytest tests covering document ingestion, retrieval, and grounded answers
+- **Privacy checks:** identity columns are dropped, and no traveler name or nationality appears in any document's text
+- **Data handling:** no missing values in document text or metadata; trips with missing transport or no city are described without guessed values
+- **Retrieval:** IDF ranking order, case-insensitive matching, the top-k limit, and empty results when no trip matches
+- **Grounded answers:** prompt format, no model call when no trips match, the system instruction is sent with every model call, and model errors are passed to the caller
+- The Gemini call is replaced with a fake in tests, so the suite runs offline, costs nothing, and never calls the real API
+
 ## Tech Stack
 - **Language:** Python
 - **Data:** Pandas, NumPy, Jupyter
@@ -39,6 +47,7 @@ AI-powered travel assistant that answers travel questions from real trip data. B
 - **Retrieval:** keyword search with IDF weighting (pure Python)
 - **Validation:** Pydantic
 - **Config:** python-dotenv
+- **Testing:** pytest
 
 ## Project Structure
 ```
@@ -53,6 +62,9 @@ TravelJoy AI/
 │       ├── retrieve.py    # keyword retrieval (IDF)
 │       └── answer.py      # retrieved trips + question → grounded answer
 ├── tests/
+│   ├── test_ingest.py     # privacy filtering, missing data, age groups
+│   ├── test_retrieve.py   # IDF ranking, empty results, top-k
+│   └── test_answer.py     # prompt building, no-match guard (fake Gemini)
 ├── main.py                # CLI: ask travel questions in a loop
 ├── requirements.txt
 └── README.md
@@ -64,6 +76,8 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+All dependency versions are pinned in `requirements.txt`.
 
 Create a `.env` file in the project root (never committed):
 ```
@@ -83,12 +97,22 @@ python -m src.rag.retrieve "hotel trip to London in May"                 # show 
 python -m src.rag.answer "Which London trip had the lowest total cost?"  # grounded answer from Gemini
 ```
 
+## Testing
+Run from the project root:
+```bash
+python -m pytest      # run all tests
+python -m pytest -v   # list each test by name
+```
+
+Tests don't need an API key or network access.
+
 ## Roadmap
 - [x] Data analysis (Pandas, NumPy)
 - [x] Structured outputs with Gemini + Pydantic
 - [x] RAG document ingestion
 - [x] Keyword retrieval + grounded LLM answers
 - [x] CLI query interface
+- [x] Automated tests (pytest)
 - [ ] Embeddings + Chroma vector database
 - [ ] LangGraph agent with tools + MCP
 - [ ] FastAPI + Docker deployment
