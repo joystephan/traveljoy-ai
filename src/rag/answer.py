@@ -7,6 +7,7 @@ given. If no trips match, no model call is made.
 Usage:
     python -m src.rag.answer "Which London trip had the lowest total cost?"
 """
+
 import logging
 import sys
 from dataclasses import dataclass, field

@@ -8,6 +8,7 @@ the search() interface is designed to stay the same.
 Usage:
     python -m src.rag.retrieve "hotel trip to London in May"
 """
+
 import math
 import re
 import sys
@@ -60,4 +61,3 @@ if __name__ == "__main__":
     print(f"Found {len(results)} matching trips.\n")
     for document in results:
         print(f"{document.id}: {document.text}")
-        
