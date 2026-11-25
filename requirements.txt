@@ -1,7 +1,7 @@
-pandas      # tables of data (DataFrames)
-numpy       # fast math on arrays
-matplotlib  # charts for the analysis
-jupyter     # notebooks
+pandas==3.1.1          # tables of data (DataFrames)
+numpy==2.5.4           # fast math on arrays
+matplotlib==3.11.2     # charts for the analysis
+jupyter==1.1.1         # notebooks
 google-genai==3.5.0    # Gemini API (LLM calls)
 httpx2==2.16.2         # HTTP client used by google-genai (request timeouts)
 pydantic==2.14.3       # JSON schemas + validation
