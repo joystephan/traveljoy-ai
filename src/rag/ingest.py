@@ -15,7 +15,9 @@ from pathlib import Path
 
 import pandas as pd
 
-TRIPS_CSV_PATH = Path("data/trips_clean.csv")
+# Resolved from this file's location so the dataset loads from any working directory.
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+TRIPS_CSV_PATH = PROJECT_ROOT / "data" / "trips_clean.csv"
 
 # Identity details add no value to travel answers and must never reach an LLM prompt.
 EXCLUDED_COLUMNS = ("Traveler name", "Traveler gender", "Traveler nationality")
