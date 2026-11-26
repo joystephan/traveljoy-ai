@@ -24,10 +24,13 @@ AI-powered travel assistant that answers travel questions from real trip data. B
 - **Keyword retrieval:** ranks trips by shared terms weighted by inverse document frequency (IDF), so rare terms like a city name outweigh common ones
 - **Grounded answers:** retrieved trips are sent to Gemini as context; the model is instructed to cite trip IDs (e.g. `[trip-89]`) and to say so when the data can't answer; no model call is made when no trips match
 - Missing source fields handled explicitly and never guessed
+- Dataset path resolved from the module's location, so ingestion works from any working directory
 - Document shape mirrors LangChain and Chroma (`id`, `text`, `metadata`)
 
 ### ✅ Command-line interface
 - Interactive question loop (`main.py`): prints each grounded answer followed by the IDs of the trips retrieved for it
+- Shows example questions on startup
+- `--top-k` option sets how many trips are retrieved per question (default: 5)
 - Exits cleanly on `quit`, `exit`, an empty line, or Ctrl+C
 - Shows a friendly message instead of a traceback when every configured model is unavailable, and keeps the session running
 - Logs model fallback events from the project's Gemini client while keeping third-party libraries at warning level
@@ -48,10 +51,11 @@ AI-powered travel assistant that answers travel questions from real trip data. B
 - **Validation:** Pydantic
 - **Config:** python-dotenv
 - **Testing:** pytest
+- **Code quality:** Ruff (linting and formatting)
 
 ## Project Structure
 ```
-TravelJoy AI/
+traveljoy-ai/
 ├── data/                  # raw and cleaned datasets
 ├── notebooks/             # exploratory analysis
 ├── src/
@@ -72,10 +76,14 @@ TravelJoy AI/
 
 ## Setup
 ```bash
+git clone https://github.com/joystephan/traveljoy-ai.git
+cd traveljoy-ai
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+On Windows, use `python -m venv .venv` and `.venv\Scripts\activate` instead.
 
 All dependency versions are pinned in `requirements.txt`.
 
@@ -91,6 +99,8 @@ Get a free API key at [Google AI Studio](https://aistudio.google.com/).
 ## Usage
 ```bash
 python main.py                                                           # interactive Q&A over the trip dataset
+python main.py --top-k 3                                                 # retrieve 3 trips per question instead of 5
+python main.py --help                                                    # list CLI options
 python -m src.structured_demo                                            # structured trip recommendation from Gemini
 python -m src.rag.ingest                                                 # load trips as RAG documents
 python -m src.rag.retrieve "hotel trip to London in May"                 # show the best-matching trips
@@ -105,6 +115,13 @@ python -m pytest -v   # list each test by name
 ```
 
 Tests don't need an API key or network access.
+
+## Code quality
+Code is formatted and linted with Ruff:
+```bash
+ruff check main.py src tests            # lint
+ruff format --check main.py src tests   # verify formatting
+```
 
 ## Roadmap
 - [x] Data analysis (Pandas, NumPy)
