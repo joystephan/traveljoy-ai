@@ -7,6 +7,7 @@ to the next configured model instead of blocking the caller.
 Usage:
     from src.llm import generate_text, generate_structured
 """
+
 import logging
 import os
 from functools import lru_cache
@@ -37,13 +38,17 @@ def _get_client() -> genai.Client:
 
 def _configured_models() -> list[str]:
     """Return the model names from .env, in fallback order."""
-    models = [m for m in (os.getenv("GEMINI_MODEL"), os.getenv("GEMINI_FALLBACK_MODEL")) if m]
+    models = [
+        m for m in (os.getenv("GEMINI_MODEL"), os.getenv("GEMINI_FALLBACK_MODEL")) if m
+    ]
     if not models:
         raise RuntimeError("No models configured. Set GEMINI_MODEL in .env.")
     return models
 
 
-def _generate(prompt: str, config: types.GenerateContentConfig) -> types.GenerateContentResponse:
+def _generate(
+    prompt: str, config: types.GenerateContentConfig
+) -> types.GenerateContentResponse:
     """Send the prompt to each configured model until one responds.
 
     Transient errors and timeouts move on to the next model; any other
@@ -61,8 +66,13 @@ def _generate(prompt: str, config: types.GenerateContentConfig) -> types.Generat
                 raise
             logger.warning("%s unavailable (%s), trying next model", model, e.code)
         except httpx2.TimeoutException:
-            # google-genai uses httpx2; its timeouts are not APIError and not httpx.TimeoutException.
-            logger.warning("%s timed out after %d s, trying next model", model, REQUEST_TIMEOUT_MS // 1000)
+            # google-genai uses httpx2, whose timeouts are neither APIError
+            # nor httpx.TimeoutException.
+            logger.warning(
+                "%s timed out after %d s, trying next model",
+                model,
+                REQUEST_TIMEOUT_MS // 1000,
+            )
     raise RuntimeError("All configured models are unavailable. Try again later.")
 
 
@@ -83,5 +93,9 @@ def generate_structured(prompt: str, schema: type[SchemaT]) -> SchemaT:
     )
     response = _generate(prompt, config)
     if not isinstance(response.parsed, schema):
-        raise RuntimeError("Model response did not match the expected schema.")
+        # An invalid response is a model failure, not a caller type error, so it
+        # raises the same exception as other model failures.
+        raise RuntimeError(  # noqa: TRY004
+            "Model response did not match the expected schema."
+        )
     return response.parsed

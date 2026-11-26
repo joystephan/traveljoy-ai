@@ -32,7 +32,10 @@ def test_tokenize_lowercases_strips_punctuation_and_deduplicates():
 
 
 def test_rare_terms_outrank_common_terms(small_retriever):
-    assert result_ids(small_retriever.search("London May")) == ["london-may", "paris-may"]
+    assert result_ids(small_retriever.search("London May")) == [
+        "london-may",
+        "paris-may",
+    ]
 
 
 def test_search_is_case_insensitive(small_retriever):

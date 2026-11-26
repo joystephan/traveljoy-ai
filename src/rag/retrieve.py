@@ -31,11 +31,14 @@ class KeywordRetriever:
     def __init__(self, documents: list[Document]):
         self.documents = documents
         self._doc_tokens = [tokenize(doc.text) for doc in documents]
-        doc_frequency = Counter(token for tokens in self._doc_tokens for token in tokens)
+        doc_frequency = Counter(
+            token for tokens in self._doc_tokens for token in tokens
+        )
         # Terms found in every document (e.g. "trip", "to") get zero weight,
         # so no stop-word list is needed.
         self._idf = {
-            token: math.log(len(documents) / count) for token, count in doc_frequency.items()
+            token: math.log(len(documents) / count)
+            for token, count in doc_frequency.items()
         }
 
     def search(self, query: str, top_k: int = DEFAULT_TOP_K) -> list[Document]:

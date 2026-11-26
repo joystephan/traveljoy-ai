@@ -56,7 +56,11 @@ def format_age_group(age: float) -> str:
 def trip_to_document(trip: pd.Series) -> Document:
     """Convert one trip row into a Document, describing only recorded fields."""
     month = trip["Start date"].strftime("%B")
-    age_group = format_age_group(trip["Traveler age"]) if pd.notna(trip["Traveler age"]) else None
+    age_group = (
+        format_age_group(trip["Traveler age"])
+        if pd.notna(trip["Traveler age"])
+        else None
+    )
 
     sentences = [
         f"{trip['Duration (days)']}-day trip to {format_location(trip)} starting in {month}.",
@@ -86,9 +90,13 @@ def trip_to_document(trip: pd.Series) -> Document:
         "traveler_age_group": age_group,
     }
     # Vector stores reject null metadata values, so missing fields are omitted.
-    metadata.update({key: value for key, value in optional_fields.items() if pd.notna(value)})
+    metadata.update(
+        {key: value for key, value in optional_fields.items() if pd.notna(value)}
+    )
 
-    return Document(id=f"trip-{trip['Trip ID']}", text=" ".join(sentences), metadata=metadata)
+    return Document(
+        id=f"trip-{trip['Trip ID']}", text=" ".join(sentences), metadata=metadata
+    )
 
 
 def load_documents(path: Path = TRIPS_CSV_PATH) -> list[Document]:

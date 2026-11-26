@@ -38,7 +38,10 @@ def llm_calls(monkeypatch):
 
 
 def test_build_prompt_tags_each_trip_with_its_id():
-    documents = [Document(id="trip-1", text="Trip A."), Document(id="trip-2", text="Trip B.")]
+    documents = [
+        Document(id="trip-1", text="Trip A."),
+        Document(id="trip-2", text="Trip B."),
+    ]
     assert build_prompt("Which is cheaper?", documents) == (
         "Trips:\n[trip-1] Trip A.\n[trip-2] Trip B.\n\nQuestion: Which is cheaper?"
     )

@@ -7,3 +7,4 @@ httpx2==2.16.2         # HTTP client used by google-genai (request timeouts)
 pydantic==2.14.3       # JSON schemas + validation
 python-dotenv==1.2.4   # loads API keys from .env
 pytest==9.2.0          # test runner
+ruff==0.17.6           # linter and formatter

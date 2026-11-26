@@ -6,6 +6,7 @@ response against a Pydantic schema.
 Usage:
     python -m src.structured_demo
 """
+
 import logging
 from typing import Literal
 
@@ -34,8 +35,12 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)
     logging.getLogger("src.llm").setLevel(logging.INFO)
 
-    trip = recommend("Recommend one budget-friendly European city to visit in March for a 5-day trip.")
+    trip = recommend(
+        "Recommend one budget-friendly European city to visit in March for a 5-day trip."
+    )
     print(trip)
-    print(f"\n{trip.city}, {trip.country}: ~${trip.estimated_budget_usd} ({trip.travel_style})")
+    print(
+        f"\n{trip.city}, {trip.country}: ~${trip.estimated_budget_usd} ({trip.travel_style})"
+    )
     for reason in trip.reasons:
         print(" -", reason)

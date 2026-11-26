@@ -56,7 +56,9 @@ def answer_question(question: str, top_k: int = DEFAULT_TOP_K) -> Answer:
     if not documents:
         # With no context the model could only guess, so skip the call.
         return Answer(text=NO_MATCH_MESSAGE)
-    text = generate_text(build_prompt(question, documents), system_instruction=SYSTEM_INSTRUCTION)
+    text = generate_text(
+        build_prompt(question, documents), system_instruction=SYSTEM_INSTRUCTION
+    )
     return Answer(text=text.strip(), source_ids=[document.id for document in documents])
 
 

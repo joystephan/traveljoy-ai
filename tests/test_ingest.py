@@ -34,7 +34,11 @@ def find_leaks(documents, values):
     leaks = []
     for value in values:
         pattern = re.compile(rf"\b{re.escape(value)}\b", re.IGNORECASE)
-        leaks.extend((document.id, value) for document in documents if pattern.search(document.text))
+        leaks.extend(
+            (document.id, value)
+            for document in documents
+            if pattern.search(document.text)
+        )
     return leaks
 
 
@@ -45,7 +49,9 @@ def test_one_document_per_trip(documents):
 
 def test_document_text_contains_no_nan(documents):
     nan_pattern = re.compile(r"\bnan\b", re.IGNORECASE)
-    assert [document.id for document in documents if nan_pattern.search(document.text)] == []
+    assert [
+        document.id for document in documents if nan_pattern.search(document.text)
+    ] == []
 
 
 def test_metadata_contains_no_missing_values(documents):
